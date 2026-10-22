@@ -29,6 +29,31 @@ go build -o ytdlpick .
 go test ./...
 ```
 
+## Nix
+
+The repository is a flake. Try it without installing:
+
+```
+nix run github:rck/ytdlpick -- URL...
+```
+
+Or add it to a NixOS configuration:
+
+```nix
+{
+  inputs.ytdlpick.url = "github:rck/ytdlpick";
+  # ...
+  environment.systemPackages = [ inputs.ytdlpick.packages.${pkgs.system}.default ];
+}
+```
+
+`package.nix` is a plain `callPackage` style expression, so it also works
+without flakes (`pkgs.callPackage ./package.nix { }`), and the flake offers
+it as `overlays.default`.
+
+The package wraps the binary so that nixpkgs' yt-dlp (with ffmpeg) is on
+its PATH. `nix develop` gives a shell with Go, yt-dlp and gopls.
+
 ## How it works
 
 1. Info for all URLs is fetched concurrently with `yt-dlp -J`. Playlists

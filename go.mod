@@ -1,6 +1,6 @@
 module github.com/rck/ytdlpick
 
-go 1.26.8
+go 1.26
 
 require (
 	github.com/charmbracelet/bubbles v1.0.0
