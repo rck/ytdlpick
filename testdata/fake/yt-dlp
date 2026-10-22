@@ -1,0 +1,24 @@
+#!/bin/sh
+# Fake yt-dlp for tests: serves fixtures by URL keyword, pretends to download.
+# Set FAKE_YTDLP_LOG to record every invocation.
+FIX="$(dirname "$0")/../../internal/ytdlp/testdata"
+[ -n "$FAKE_YTDLP_LOG" ] && echo "$*" >> "$FAKE_YTDLP_LOG"
+if [ "$1" = "--version" ]; then echo "fake"; exit 0; fi
+dump=0
+for a in "$@"; do [ "$a" = "--dump-single-json" ] && dump=1; done
+url=""
+for a in "$@"; do url="$a"; done
+if [ "$dump" = 1 ]; then
+  case "$url" in
+    *bbb*|*aqz-KE-bpKQ*) cat "$FIX/video_bbb.json" ;;
+    *multi*|*0e3GPea1Tyg*) cat "$FIX/video_multiaudio.json" ;;
+    *sintel*|*eRsGyueVLvQ*) cat "$FIX/video_sintel.json" ;;
+    *playlist*) cat "$FIX/playlist_flat.json" ;;
+    *slow*) sleep 2; cat "$FIX/video_bbb.json" ;;
+    *) echo "ERROR: [fake] $url: Video unavailable" >&2; exit 1 ;;
+  esac
+  exit 0
+fi
+echo "[fake] downloading $url with: $*"
+case "$url" in *fail*) echo "ERROR: [fake] download failed" >&2; exit 1;; esac
+exit 0
